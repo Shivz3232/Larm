@@ -17,9 +17,13 @@ router.use(middleware.extractCookieData);
 // Optional data: None
 router.get("/all", function(req, res) {
     // Query all blogs and return
-    blogSchema.find({}, function(err, blogs) {
-        if (!err && blogs) {
-            console.log(blogs);
+    Blog.find({}, "-__v", function(err, blogData) {
+        if (!err && blogData) {
+            // Construct an object and resposd
+            const blogs = {
+                "blogs": blogData
+            };
+            res.json(blogs);
             res.end()
         } else {
             res.status(500);
@@ -193,6 +197,95 @@ router.post("/", middleware.requireLogin, function(req, res) {
                 res.status(500);
                 res.json({
                     "Msg": "Failed to save blog. Please try again."
+                });
+                res.end();
+            }
+        });
+    } else {
+        res.status(400);
+        res.json({
+            "Msg": "Invalid input parameters. Please try again."
+        });
+        res.end();
+    }
+});
+
+// Like blog
+// Required data: blogId, session
+// Optional data: None
+router.put("/like/:blogId", middleware.requireLogin, function(req, res) {
+    // Verify required parameters
+    const blogId = typeof (req.params.blogId) == "string" && req.params.blogId.trim().length == 24 ? req.params.blogId.trim() : false;
+    if (blogId) {
+        // Find the blog and add the current user id to likes array
+        Blog.findById(blogId, "likes", function(err, blogData) {
+            if (!err && blogData) {
+                // If user has already liked the blog then remove the userId from the likes else add it
+                const index = blogData.likes.indexOf(req.user._id);
+                if (index == -1) {
+                    blogData.likes.push(req.user._id);
+                    blogData.save(function(err){
+                        if (!err) {
+                            res.end();
+                        } else {
+                            res.status(500);
+                            res.json({
+                                "Msg": "Failed to like blog. Please try again."
+                            });
+                            res.end();
+                        }
+                    })
+                } else {
+                    blogData.likes.splice(index, 1);
+                    blogData.save(function(err) {
+                        if (!err) {
+                            res.end();
+                        } else {
+                            res.status(500);
+                            res.json({
+                                "Msg": "Failed to un-like blog. Please try again."
+                            });
+                            res.end();
+                        }
+                    })
+                }
+            } else {
+                res.status(500);
+                res.json({
+                    "Msg": "Request failed. Please try again."
+                });
+                res.end();
+            }
+        });
+    } else {
+        res.status(400);
+        res.json({
+            "Msg": "Invalid input parameters. Please try again."
+        });
+        res.end();
+    }
+});
+
+// GET user blogs
+// Required data: userId, session
+// Optional data: None
+router.get("/user/:userId", middleware.requireLogin, function(req, res) {
+    // Validate required parameters
+    const userId = typeof (req.params.userId) == "string" && req.params.userId.trim().length == 24 ? req.params.userId.trim() : false;
+    if(userId) {
+        // Search and return all the blogs belonging to the user
+        Blog.find({ creator: userId }, "-__v", function(err, blogData) {
+            if (!err) {
+                // Construct the json response and respond
+                const blogs = {
+                    blogs: blogData
+                }
+                res.json(blogs);
+                res.end();
+            } else {
+                res.status(500);
+                res.json({
+                    "Msg": "Request failed. Please try again."
                 });
                 res.end();
             }
