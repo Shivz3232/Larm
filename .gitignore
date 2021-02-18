@@ -105,5 +105,3 @@ dist
 
 # Keys used in development
 dev.keys.json
-
-package-lock.json
