@@ -1,7 +1,7 @@
-# BLOG-API
+# Larm
 This repo is to host the blog API that I built for the trial project for internship at Masko
 
-# This can also be used as a boiler plate for an API to server blogs
+# This can also be used as a boiler plate for an API to serve blogs
 - User session is maintained using cookies
 
 # How to run the app?
