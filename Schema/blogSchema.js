@@ -23,8 +23,7 @@ const blogSchema = new Schema({
         required: true
     },
     likes: {
-        type: [Schema.Types.ObjectId],
-        default: []
+        type: [Schema.Types.ObjectId]
     }
 });
 
