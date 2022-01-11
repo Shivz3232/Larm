@@ -69,7 +69,7 @@ router.get("/:blogId", function(req, res) {
 });
 
 // Delete blog
-// Required data: blogId
+// Required data: blogId, session
 // Optional data: None
 router.delete("/:blogId", middleware.requireLogin, function(req, res) {
     // Verify required parameters
@@ -123,7 +123,7 @@ router.delete("/:blogId", middleware.requireLogin, function(req, res) {
 });
 
 // Edit blog
-// Required data: blogId
+// Required data: session
 // Optional data: blog title, blog text
 router.put("/:blogId", middleware.requireLogin, function(req, res) {
     // Verify required and optional parameters
@@ -177,7 +177,7 @@ router.put("/:blogId", middleware.requireLogin, function(req, res) {
 });
 
 // Delete blog
-// Required data: title, text
+// Required data: title, text, session
 // Optional data: None
 router.post("/", middleware.requireLogin, function(req, res) {
     // Verify required data
